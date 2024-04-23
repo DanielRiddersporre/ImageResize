@@ -5,7 +5,7 @@ VisualStudioVersion = 17.7.34024.191
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ImageResize", "ImageResize\ImageResize.csproj", "{6E1DBB8C-D03E-4D77-8C3B-9D68CDA77141}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ImageResizerLibrary", "ImageResizerLibrary\ImageResizerLibrary.csproj", "{109345D3-A239-46FD-A497-C77602426709}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ImageResizerLibrary", "ImageResizerLibrary\ImageResizerLibrary.csproj", "{109345D3-A239-46FD-A497-C77602426709}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ImageResizerTests", "ImageResizerTests\ImageResizerTests.csproj", "{DDBF0AE5-C410-43DD-B853-1619798F6599}"
 EndProject
