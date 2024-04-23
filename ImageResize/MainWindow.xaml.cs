@@ -26,26 +26,20 @@ namespace ImageResize
         string selectedImagePath;
         readonly ImageResizer imageResizer;
         int maxWidth, maxHeight = 512;
-        string startMessage = "Ready to handle a new image..";
 
         public MainWindow()
         {
             InitializeComponent();
 
             imageResizer = new ImageResizer();
-
-            StatusTextBlock.Text = startMessage;
         }
 
         private void SelectImageButton_Click(object sender, RoutedEventArgs routedEvent)
         {
             OpenFileDialog openFileDialog = new OpenFileDialog();
-            openFileDialog.Filter = "Image files (*.jpg, *.jpeg, *.png)|*.jpg;*.jpeg;*.png|All files (*.*)|*.*";
+            openFileDialog.Filter = "Image files (*.jpg, *.jpeg, *.png)|*.jpg;*.jpeg;*.png";
             if (openFileDialog.ShowDialog() == true)
             {
-                selectedImagePath = openFileDialog.FileName;
-
-                // Display the selected image path or perform any other action
                 StatusTextBlock.Text = $"Selected Image: {selectedImagePath}";
             }
         }
@@ -63,16 +57,13 @@ namespace ImageResize
             {
                 try
                 {
-                    // Load the selected image
                     resizeCompleted = imageResizer.ResizeImage(selectedImagePath, maxWidth, maxHeight);
                 }
                 catch (Exception ex)
                 {
-                    MessageBox.Show(ex.Message);
-
-                    // Set path to empty and reset status text
+                    MessageBox.Show("Something went wrong, check the log file for detailed information!");
+                    imageResizer.AddLogMessage(ex.Message, MessageType.Error); ;
                     selectedImagePath = string.Empty;
-                    StatusTextBlock.Text = startMessage;
                 }
             }
 
@@ -85,8 +76,8 @@ namespace ImageResize
                 MessageBox.Show("Something went wrong during the resizing process. Check the log file for more information!");
             }
 
-            StatusTextBlock.Text = startMessage;
             selectedImagePath = string.Empty;
+            StatusTextBlock.Text = string.Empty;
         }
     }
 }
