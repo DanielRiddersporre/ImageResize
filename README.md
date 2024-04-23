@@ -13,6 +13,19 @@ original image is smaller than this, the image keeps it's original width and hei
 - If everything goes well your resized image can be found in ../ImageResize/ImageResize/bin/Debug/net7.0-windows/resizedImages/ with the part "_thumb" added to the filename
 - If process ends with any errors you can find more information in the log file; ../ImageResize/ImageResize/bin/Debug/net7.0-windows/resizedlog.txt
 
+# Structure
+The application consists of three different projects.
+1. ImageResizer (UI) (WPF)
+   The responsebility of this project is solely to make it easier for the user to actually use the software.
+   A simple UI with two buttons and a textbox. The textbox shows the path of the chosen file, and that's it.
+2. ImageResizerLibrary (Class Library)
+   Project responsible for handling the logic around image resizing and logging. Everything is handled by a
+   service class and some smaller objects to keep everything clean.
+3. ImageResizerTests (Unit testing)
+   This project houses the unit tests. Mainly to use DI (Dependency Injection) and create a good base for
+   further development, using TDD(?)
+   
+
 # Dependencies
 Application uses a few different frameworks to work. When cloning/forking the repository they should be automatically added to your local environment but
 in case of, here's a list with the frameworks used:
