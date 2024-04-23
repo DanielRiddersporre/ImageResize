@@ -9,8 +9,15 @@ using SixLabors.ImageSharp.Processing;
 
 namespace ImageResizerLibrary
 {
-    public class ImageResizerService
+    public class ImageResizerService : IImageResizerService
     {
+        private IImageResizerService _imageResizerService;
+
+        public ImageResizerService(IImageResizerService imageResizerService)
+        {
+            _imageResizerService = imageResizerService;
+        }
+
         public bool ResizeImage(string imagePath, int maxWidth, int maxHeight)
         {
             var isResizeSuccessful = false;
@@ -39,26 +46,9 @@ namespace ImageResizerLibrary
             return isResizeSuccessful;
         }
 
-        private Size CalculateDimensions(int originalWidth, int originalHeight, int maxWidth, int maxHeight)
-        {
-            double aspectRatio = (double)originalWidth / originalHeight;
-
-            if (originalWidth <= maxWidth && originalHeight <= maxHeight)
-            {
-                return new Size(originalWidth, originalHeight);
-            }
-
-            if (originalWidth > maxWidth)
-            {
-                return new Size(maxWidth, (int)Math.Round(maxWidth / aspectRatio));
-            }
-
-            return new Size((int)Math.Round(maxHeight * aspectRatio), maxHeight);
-        }
-
         public void AddLogMessage(string message, MessageType messageType)
         {
-            var resizeLogPath = "log/resizelog.txt";
+            var resizeLogPath = "resizelog.txt";
 
             if (!File.Exists(resizeLogPath))
             {
@@ -83,6 +73,21 @@ namespace ImageResizerLibrary
             }
         }
 
-        
+        private Size CalculateDimensions(int originalWidth, int originalHeight, int maxWidth, int maxHeight)
+        {
+            double aspectRatio = (double)originalWidth / originalHeight;
+
+            if (originalWidth <= maxWidth && originalHeight <= maxHeight)
+            {
+                return new Size(originalWidth, originalHeight);
+            }
+
+            if (originalWidth > maxWidth)
+            {
+                return new Size(maxWidth, (int)Math.Round(maxWidth / aspectRatio));
+            }
+
+            return new Size((int)Math.Round(maxHeight * aspectRatio), maxHeight);
+        }
     }
 }
