@@ -14,49 +14,32 @@ namespace ImageResizerLibrary
         public bool ResizeImage(string imagePath, int maxWidth, int maxHeight)
         {
             var isResizeSuccessful = false;
-            var resizeLogPath = "log/resizelog.txt";
 
-            if (!File.Exists(resizeLogPath)) 
+            try
             {
-                File.Create(resizeLogPath).Dispose();
-            }
-
-            Log.Logger = new LoggerConfiguration()
-                .WriteTo.File(resizeLogPath)
-                .CreateLogger();
-
-
-            if (validateFileType(Path.GetExtension(imagePath)))
-            {
-                try
+                using (var image = Image.Load(imagePath))
                 {
-                    using (var image = Image.Load(imagePath))
-                    {
-                        var (newWidth, newHeight) = CalculateDimensions(image.Width, image.Height, maxWidth, maxHeight);
+                    var (newWidth, newHeight) = CalculateDimensions(image.Width, image.Height, maxWidth, maxHeight);
 
-                        image.Mutate(x => x.Resize(newWidth, newHeight));
+                    image.Mutate(x => x.Resize(newWidth, newHeight));
 
-                        string resizedImagePath = Path.Combine(Path.GetFileNameWithoutExtension(imagePath)) + "_thumb" + Path.GetExtension(imagePath);
+                    string resizedImagePath = Path.Combine(Path.GetFileNameWithoutExtension(imagePath)) + "_thumb" + Path.GetExtension(imagePath);
                     
-                        image.Save(resizedImagePath);
-                        isResizeSuccessful = true;
-                    }
-                }
-                catch (Exception ex)
-                {
-                    Log.Error(ex.Message);
-                    isResizeSuccessful = false;
+                    image.Save(resizedImagePath);
+                    isResizeSuccessful = true;
+                    AddLogMessage($"File size changed to {newWidth} and {newHeight}.", MessageType.Information);
                 }
             }
-            else
+            catch (Exception ex)
             {
-                Log.Error($"File validation failed. {Path.GetExtension(imagePath)} is not a valid file type");
+                AddLogMessage(ex.Message, MessageType.Error);
+                isResizeSuccessful = false;
             }
 
             return isResizeSuccessful;
         }
 
-        public (int width, int height) CalculateDimensions(int originalWidth, int originalHeight, int maxWidth, int maxHeight)
+        private (int width, int height) CalculateDimensions(int originalWidth, int originalHeight, int maxWidth, int maxHeight)
         {
             int newWidth, newHeight;
             double aspectRatio = originalWidth / originalHeight;
@@ -83,20 +66,33 @@ namespace ImageResizerLibrary
             return (newWidth, newHeight);
         }
 
-        public bool validateFileType(string fileType)
+        public void AddLogMessage(string message, MessageType messageType)
         {
-            string[] approvedFileTypes = { ".png", ".jpg", ".jpeg" };
-            bool isFileApproved = false;
+            var resizeLogPath = "log/resizelog.txt";
 
-            foreach (var approvedFiletype in approvedFileTypes)
+            if (!File.Exists(resizeLogPath))
             {
-                if (fileType.ToLower() == approvedFiletype)
-                {
-                    isFileApproved = true;
-                }
+                File.Create(resizeLogPath).Dispose();
             }
 
-            return isFileApproved;
+            Log.Logger = new LoggerConfiguration()
+                .WriteTo.File(resizeLogPath)
+                .CreateLogger();
+
+            switch (messageType)
+            {
+                case MessageType.Information:
+                    Log.Information(message); 
+                    break;
+                case MessageType.Debug:
+                    Log.Debug(message);
+                    break;
+                case MessageType.Error:
+                    Log.Error(message);
+                    break;
+            }
         }
+
+        
     }
 }
