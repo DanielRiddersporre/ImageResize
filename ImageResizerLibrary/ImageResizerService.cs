@@ -6,8 +6,6 @@ namespace ImageResizerLibrary;
 
 public class ImageResizerService : IImageResizerService
 {
-    public ImageResizerService() { }
-
     public bool ResizeImage(string imagePath, int maxWidth, int maxHeight)
     {
         var isResizeSuccessful = false;

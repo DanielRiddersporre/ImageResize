@@ -10,5 +10,4 @@ class Size
         Width = width;
         Height = height;
     }
-
 }
