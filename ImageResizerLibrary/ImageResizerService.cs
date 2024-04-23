@@ -9,7 +9,7 @@ using SixLabors.ImageSharp.Processing;
 
 namespace ImageResizerLibrary
 {
-    public class ImageResizer
+    public class ImageResizerService
     {
         public bool ResizeImage(string imagePath, int maxWidth, int maxHeight)
         {
@@ -19,15 +19,15 @@ namespace ImageResizerLibrary
             {
                 using (var image = Image.Load(imagePath))
                 {
-                    var (newWidth, newHeight) = CalculateDimensions(image.Width, image.Height, maxWidth, maxHeight);
+                    var newSize = CalculateDimensions(image.Width, image.Height, maxWidth, maxHeight);
 
-                    image.Mutate(x => x.Resize(newWidth, newHeight));
+                    image.Mutate(x => x.Resize(newSize.Width, newSize.Height));
 
-                    string resizedImagePath = Path.Combine(Path.GetFileNameWithoutExtension(imagePath)) + "_thumb" + Path.GetExtension(imagePath);
+                    string resizedImagePath = Path.Combine("resizedImages/" + Path.GetFileNameWithoutExtension(imagePath)) + "_thumb" + Path.GetExtension(imagePath);
                     
                     image.Save(resizedImagePath);
                     isResizeSuccessful = true;
-                    AddLogMessage($"File size changed to {newWidth} and {newHeight}.", MessageType.Information);
+                    AddLogMessage($"File size changed to {image.Width}x{image.Height}.", MessageType.Information);
                 }
             }
             catch (Exception ex)
@@ -39,31 +39,21 @@ namespace ImageResizerLibrary
             return isResizeSuccessful;
         }
 
-        private (int width, int height) CalculateDimensions(int originalWidth, int originalHeight, int maxWidth, int maxHeight)
+        private Size CalculateDimensions(int originalWidth, int originalHeight, int maxWidth, int maxHeight)
         {
-            int newWidth, newHeight;
-            double aspectRatio = originalWidth / originalHeight;
+            double aspectRatio = (double)originalWidth / originalHeight;
 
-            if(originalWidth > maxWidth)
+            if (originalWidth <= maxWidth && originalHeight <= maxHeight)
             {
-                if(aspectRatio > 1)
-                {
-                    newWidth = maxWidth;
-                    newHeight = (int)Math.Round(maxWidth * aspectRatio);
-                }
-                else
-                {
-                    newWidth = (int)Math.Round(maxHeight * aspectRatio);
-                    newHeight = maxHeight;
-                }
-            }
-            else
-            {
-                newWidth = originalWidth;
-                newHeight = originalHeight;
+                return new Size(originalWidth, originalHeight);
             }
 
-            return (newWidth, newHeight);
+            if (originalWidth > maxWidth)
+            {
+                return new Size(maxWidth, (int)Math.Round(maxWidth / aspectRatio));
+            }
+
+            return new Size((int)Math.Round(maxHeight * aspectRatio), maxHeight);
         }
 
         public void AddLogMessage(string message, MessageType messageType)
