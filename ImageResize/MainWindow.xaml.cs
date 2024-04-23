@@ -24,14 +24,15 @@ namespace ImageResize
     public partial class MainWindow : Window
     {
         string selectedImagePath;
-        readonly ImageResizer imageResizer;
-        int maxWidth, maxHeight = 512;
+        readonly ImageResizerService imageResizerService;
+        int maxWidth = 512; 
+        int maxHeight = 512;
 
         public MainWindow()
         {
             InitializeComponent();
 
-            imageResizer = new ImageResizer();
+            imageResizerService = new ImageResizerService();
         }
 
         private void SelectImageButton_Click(object sender, RoutedEventArgs routedEvent)
@@ -40,6 +41,7 @@ namespace ImageResize
             openFileDialog.Filter = "Image files (*.jpg, *.jpeg, *.png)|*.jpg;*.jpeg;*.png";
             if (openFileDialog.ShowDialog() == true)
             {
+                selectedImagePath = openFileDialog.FileName;
                 StatusTextBlock.Text = $"Selected Image: {selectedImagePath}";
             }
         }
@@ -57,12 +59,12 @@ namespace ImageResize
             {
                 try
                 {
-                    resizeCompleted = imageResizer.ResizeImage(selectedImagePath, maxWidth, maxHeight);
+                    resizeCompleted = imageResizerService.ResizeImage(selectedImagePath, maxWidth, maxHeight);
                 }
                 catch (Exception ex)
                 {
                     MessageBox.Show("Something went wrong, check the log file for detailed information!");
-                    imageResizer.AddLogMessage(ex.Message, MessageType.Error); ;
+                    imageResizerService.AddLogMessage(ex.Message, MessageType.Error); ;
                     selectedImagePath = string.Empty;
                 }
             }
