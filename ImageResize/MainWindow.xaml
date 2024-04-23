@@ -1,0 +1,14 @@
+﻿<Window x:Class="ImageResize.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:ImageResize"
+        mc:Ignorable="d"
+        Title="Image Resizer" Width="420" Height="200" >
+    <Grid>
+        <Button Content="Select Image" Click="SelectImageButton_Click" HorizontalAlignment="Left" Margin="10" VerticalAlignment="Top"></Button>
+        <Button Content="Resize Image" Click="ResizeButton_Click" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="90,10"></Button>
+        <TextBlock x:Name="StatusTextBlock" TextWrapping="Wrap" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="10, 40, 0, 0" Width="380" Height="100" Background="DarkGray" Padding="10"></TextBlock>
+    </Grid>
+</Window>
