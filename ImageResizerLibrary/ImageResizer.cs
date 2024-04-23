@@ -1,5 +1,8 @@
 ﻿using System;
 using System.IO;
+using System.Reflection.Metadata.Ecma335;
+using Microsoft.VisualBasic;
+using Serilog;
 using SixLabors.ImageSharp;
 using SixLabors.ImageSharp.ColorSpaces.Conversion;
 using SixLabors.ImageSharp.Processing;
@@ -8,25 +11,46 @@ namespace ImageResizerLibrary
 {
     public class ImageResizer
     {
-        public bool ResizeImage(string imagePath, string outputDirectory, int maxWidth, int maxHeight)
+        public bool ResizeImage(string imagePath, int maxWidth, int maxHeight)
         {
             var isResizeSuccessful = false;
-            try
+            var resizeLogPath = "log/resizelog.txt";
+
+            if (!File.Exists(resizeLogPath)) 
             {
-                using (var image = Image.Load(imagePath))
+                File.Create(resizeLogPath).Dispose();
+            }
+
+            Log.Logger = new LoggerConfiguration()
+                .WriteTo.File(resizeLogPath)
+                .CreateLogger();
+
+
+            if (validateFileType(Path.GetExtension(imagePath)))
+            {
+                try
                 {
-                    var (newWidth, newHeight) = CalculateDimensions(image.Width, image.Height, maxWidth, maxHeight);
+                    using (var image = Image.Load(imagePath))
+                    {
+                        var (newWidth, newHeight) = CalculateDimensions(image.Width, image.Height, maxWidth, maxHeight);
 
-                    image.Mutate(x => x.Resize(newWidth, newHeight));
+                        image.Mutate(x => x.Resize(newWidth, newHeight));
 
-                    string resizedImagePath = Path.Combine(outputDirectory, Path.GetFileNameWithoutExtension(imagePath)) + "_thumb" + Path.GetExtension(imagePath);
+                        string resizedImagePath = Path.Combine(Path.GetFileNameWithoutExtension(imagePath)) + "_thumb" + Path.GetExtension(imagePath);
                     
-                    image.Save(resizedImagePath);
+                        image.Save(resizedImagePath);
+                        isResizeSuccessful = true;
+                    }
+                }
+                catch (Exception ex)
+                {
+                    Log.Error(ex.Message);
+                    isResizeSuccessful = false;
                 }
             }
-            catch (Exception outerException)
+            else
             {
-                Console.WriteLine(outerException.Message);
+                Log.Error($"File validation failed. {Path.GetExtension(imagePath)} is not a valid file type");
             }
 
             return isResizeSuccessful;
@@ -57,6 +81,22 @@ namespace ImageResizerLibrary
             }
 
             return (newWidth, newHeight);
+        }
+
+        public bool validateFileType(string fileType)
+        {
+            string[] approvedFileTypes = { ".png", ".jpg", ".jpeg" };
+            bool isFileApproved = false;
+
+            foreach (var approvedFiletype in approvedFileTypes)
+            {
+                if (fileType.ToLower() == approvedFiletype)
+                {
+                    isFileApproved = true;
+                }
+            }
+
+            return isFileApproved;
         }
     }
 }

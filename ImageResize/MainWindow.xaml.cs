@@ -54,35 +54,37 @@ namespace ImageResize
         {
             bool resizeCompleted = false;
 
-            while (!resizeCompleted)
+            if (string.IsNullOrEmpty(selectedImagePath))
             {
-                if (string.IsNullOrEmpty(selectedImagePath))
+                MessageBox.Show("Please select an image first.", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                return;
+            }
+            else
+            {
+                try
                 {
-                    MessageBox.Show("Please select an image first.", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
-                    return;
+                    // Load the selected image
+                    resizeCompleted = imageResizer.ResizeImage(selectedImagePath, maxWidth, maxHeight);
                 }
-                else
+                catch (Exception ex)
                 {
-                    try
-                    {
-                        // Load the selected image
-                        imageResizer.ResizeImage(selectedImagePath, selectedImagePath, maxWidth, maxHeight);
+                    MessageBox.Show(ex.Message);
 
-                        // If no problems occur exit while-loop
-                        resizeCompleted = true;
-                    }
-                    catch (Exception ex)
-                    {
-                        MessageBox.Show(ex.Message);
-
-                        // Set path to empty and reset status text
-                        selectedImagePath = string.Empty;
-                        StatusTextBlock.Text = startMessage;
-                    }
+                    // Set path to empty and reset status text
+                    selectedImagePath = string.Empty;
+                    StatusTextBlock.Text = startMessage;
                 }
             }
 
-            MessageBox.Show($"Image resized and saved to: {selectedImagePath}", "Success", MessageBoxButton.OK, MessageBoxImage.Information);
+            if (resizeCompleted)
+            {
+                MessageBox.Show($"Image resized and saved to: {selectedImagePath}", "Success", MessageBoxButton.OK, MessageBoxImage.Information);
+            }
+            else
+            {
+                MessageBox.Show("Something went wrong during the resizing process. Check the log file for more information!");
+            }
+
             StatusTextBlock.Text = startMessage;
             selectedImagePath = string.Empty;
         }
