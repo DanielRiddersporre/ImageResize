@@ -23,8 +23,9 @@ namespace ImageResize
     /// </summary>
     public partial class MainWindow : Window
     {
+        private readonly IImageResizerService _imageResizerService;
+        
         string selectedImagePath;
-        readonly ImageResizerService imageResizerService;
         int maxWidth = 512; 
         int maxHeight = 512;
 
@@ -32,7 +33,7 @@ namespace ImageResize
         {
             InitializeComponent();
 
-            imageResizerService = new ImageResizerService();
+            _imageResizerService = new ImageResizerService(_imageResizerService);
         }
 
         private void SelectImageButton_Click(object sender, RoutedEventArgs routedEvent)
@@ -59,12 +60,12 @@ namespace ImageResize
             {
                 try
                 {
-                    resizeCompleted = imageResizerService.ResizeImage(selectedImagePath, maxWidth, maxHeight);
+                    resizeCompleted = _imageResizerService.ResizeImage(selectedImagePath, maxWidth, maxHeight);
                 }
                 catch (Exception ex)
                 {
                     MessageBox.Show("Something went wrong, check the log file for detailed information!");
-                    imageResizerService.AddLogMessage(ex.Message, MessageType.Error); ;
+                    _imageResizerService.AddLogMessage(ex.Message, MessageType.Error); ;
                     selectedImagePath = string.Empty;
                 }
             }
