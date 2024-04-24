@@ -22,8 +22,7 @@ The application consists of three different projects.
    Project responsible for handling the logic around image resizing and logging. Everything is handled by a
    service class and some smaller objects to keep everything clean.
 3. ### ImageResizerTests (Unit testing) ###
-   This project houses the unit tests. Mainly to use DI (Dependency Injection) and create a good base for
-   further development, using TDD(?)
+   This project is supposed to house the unit tests
    
 
 # Dependencies
